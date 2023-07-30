@@ -1,0 +1,225 @@
+track_list: "assets/track_list"
+db_audio_dir: "assets/audio_db"
+db_preproc_dir: "assets/audio_preproc_db"
+handcrafted_feats_dir: "assets/handcrafted_feats_db"
+extractor_dir: "assets/audio_metadata"
+music_detection_dir: "assets/music_detection"
+
+audio_db_config:
+  0:
+    label:
+      name: 'spotify'
+      params:
+        search_limit: 50
+    aud_db_sz: 20000 # number of audio data. If null, using all audio data
+  1:
+    label:
+      name: 'spotify'
+      params:
+        search_limit: 50
+    aud_db_sz: 100000 # number of audio data. If null, using all audio data
+  2:
+    label:
+      name: 'spotify'
+      params:
+        search_limit: 50
+    aud_db_sz: null # number of audio data. If null, using all audio data
+
+
+preproc_config:
+  0:
+    audio_info:
+      sampling_rate: 32000
+      is_mono: true
+    aud_db_sz: null # number of audio data. If null, using all audio data
+
+transform_config:
+  0:
+    transform_info:
+      0:
+        transform_type: 'spectrogram'
+        param:
+          window_size: 2048
+          hop_size: 1024
+          is_mel: True
+          numofband: 96
+      1:
+        transform_type: 'cqt'
+        param:
+          hop_size: 1024
+          n_bins: 96
+          bins_per_octave: 12
+      2:
+        transform_type: 'chromagram'
+        param:
+          window_size: 2048
+          hop_size: 1024
+          n_chroma: 12
+      3:
+        transform_type: 'tempogram'
+        param:
+          window_size: 384
+          hop_size: 1024
+          min_max_tempo: [16, 208]
+    aud_db_sz: null # number of audio data. If null, using all audio data
+  1:
+    transform_info:
+      0:
+        transform_type: 'chromagram'
+        param:
+          window_size: null
+          hop_size: 512
+          n_chroma: 12
+          is_cqt: True
+      1:
+        transform_type: 'tempogram'
+        param:
+          window_size: 500
+          hop_size: 512
+          min_max_tempo: [0, 500]
+          onset_aggregate: median
+
+    aud_db_sz: null # number of audio data. If null, using all audio data
+
+
+audio_meta_extraction_config:
+  1:
+    cnn_config:
+      0:
+        type: 'spectrogram'
+        numoflayers: [ 64, 128, 256 ]
+        kernel_sizes: [ [ 41, 5 ], [ 21, 5 ], [ 5, 5 ] ]
+        strides: [ [ 20, 2 ], [ 10, 2 ], [ 1, 2 ] ]
+      1:
+        type: 'cqt'
+        numoflayers: [ 64, 128, 256 ]
+        kernel_sizes: [ [ 41, 5 ], [ 21, 5 ], [ 5, 5 ] ]
+        strides: [ [ 20, 2 ], [ 10, 2 ], [ 1, 2 ] ]
+      2:
+        type: 'chromagram'
+        numoflayers: [ 32, 64 ]
+        kernel_sizes: [ [ 41, 5 ], [ 21, 5 ] ]
+        strides: [ [ 20, 1 ], [ 10, 1 ] ]
+      3:
+        type: 'tempogram'
+        numoflayers: [ 32, 32, 64 ]
+        kernel_sizes: [ [ 41, 7 ], [ 21, 5 ], [ 5, 5 ] ]
+        strides: [ [ 20, 4 ], [ 10, 2 ], [ 1, 2 ] ]
+    rnn_config:
+      numoflayers: 2
+      numofneurons: 1024
+      rnn_type: 'gru'
+      is_bidirectional: True
+      dropout: 0.2
+    dense_config:
+      numoflayers: 1
+      numofneurons: [256]
+      dropout: 0.2
+    task_config:
+      task_type:
+        type: 'regression'
+        multi_task: [ 'acousticness', 'danceability', 'energy', 'instrumentalness', 'liveness', 'valence' ]
+        single_task: []
+      q_index: 1.
+      temperature: 1.
+    max_length_limit_ms: 300000 # 5 * 60 * 1000 ms == 5 min
+    result_type: 'plotting'
+  4:
+    cnn_config:
+      0:
+        type: 'spectrogram'
+        numoflayers: [ 64, 128, 256 ]
+        kernel_sizes: [ [ 41, 5 ], [ 21, 5 ], [ 5, 5 ] ]
+        strides: [ [ 20, 2 ], [ 10, 2 ], [ 1, 2 ] ]
+      1:
+        type: 'cqt'
+        numoflayers: [ 64, 128, 256 ]
+        kernel_sizes: [ [ 41, 5 ], [ 21, 5 ], [ 5, 5 ] ]
+        strides: [ [ 20, 2 ], [ 10, 2 ], [ 1, 2 ] ]
+      2:
+        type: 'chromagram'
+        numoflayers: [ 32, 64 ]
+        kernel_sizes: [ [ 41, 5 ], [ 21, 5 ] ]
+        strides: [ [ 20, 1 ], [ 10, 1 ] ]
+      3:
+        type: 'tempogram'
+        numoflayers: [ 32, 32, 64 ]
+        kernel_sizes: [ [ 41, 7 ], [ 21, 5 ], [ 5, 5 ] ]
+        strides: [ [ 20, 4 ], [ 10, 2 ], [ 1, 2 ] ]
+    rnn_config:
+      numoflayers: 1
+      numofneurons: 1024
+      rnn_type: 'gru'
+      is_bidirectional: True
+      dropout: 0
+    dense_config:
+      numoflayers: 0
+      numofneurons: []
+      dropout: 0.2
+    task_config:
+      task_type:
+        type: 'regression'
+        multi_task: ['acousticness', 'valence', 'energy' ]
+        single_task: ['liveness', 'instrumentalness'] #
+      q_index: 1.
+      temperature: 1.
+    max_length_limit_ms: 300000 # 5 * 60 * 1000 ms == 5 min
+    result_type: 'plotting'
+
+audio_analysis_extraction_config:
+  1:
+    analysis_info:
+      0:
+        audio_feature: 'tempo'
+        target_transform: 'tempogram'
+        param:
+          max_tempo: 320
+          start_bpm: 120
+          std_bpm: 1.0
+
+      1:
+        audio_feature: 'key'
+        target_transform: 'chromagram'
+        param:
+          result_type: ['key','mode']
+
+      2:
+        audio_feature: 'pitch'
+        target_transform: 'chromagram'
+        param:
+          segment_duration: 0.25 # second
+
+    max_length_limit_ms: null
+
+
+music_detection_extraction_config:
+  0:
+    cnn_config:
+      0:
+        type: 'spectrogram'
+        numoflayers: []
+        kernel_sizes: [[]]
+        strides: [[]]
+      1:
+        type: 'cqt'
+        numoflayers: []
+        kernel_sizes: [[]]
+        strides: [[]]
+      2:
+        type: 'chromagram'
+        numoflayers: []
+        kernel_sizes: [[]]
+        strides: [[]]
+      3:
+        type: 'tempogram'
+        numoflayers: []
+        kernel_sizes: [[]]
+        strides: [[]]
+    num_epochs: 5
+    num_gpus: 0
+    num_workers: 0
+    batch_size: 300
+    learning_rate: 0.001
+    weight_decay: 0.0001
+    hop_length: 128
+    check_val_every_n_epoch: 1

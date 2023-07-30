@@ -1,0 +1,19 @@
+# ignore files
+.DS_Store
+*.pyc
+*.cache
+*.mar
+
+# ignore directories
+.idea/
+assets/audio_db/
+assets/audio_preproc_db/
+assets/handcrafted_feats_db/
+assets/audio_metadata/
+assets/music_detection/
+assets/network
+assets/core_test_set
+
+assets/test_set_with_label
+assets/top_100
+assets/sp_result
