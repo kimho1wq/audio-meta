@@ -1,5 +1,5 @@
 # audio-meta
-AI 모델을 생성하고, 학습된 모델과 메타 데이터를 압축하여 [TorchServe](https://github.com/pytorch/serve)를 이용하기 위해 저장한다
+음성과 음악 데이터의 메타 정보를 추출하기 위한 AI 모델을 생성하고, 학습된 모델과 메타 데이터를 압축하여 [TorchServe](https://github.com/pytorch/serve)를 이용하기 위해 저장한다
 
 
 ## Environment Setup
@@ -39,7 +39,7 @@ database = 'db', pre_processing = 'pp', transform = 'tr', extractor = 'ex'의 �
 ### process
 원하는 모델과 관련된 프로세스를 명시해줘야 한다
 
-'music_detection', 'audio_meta', 'audio_analysis 중 한가지를 선택한다
+'music_detection', 'audio_meta', 'audio_analysis' 중 한가지를 선택한다
 
 > e.g. -p audio_meta
 
