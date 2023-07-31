@@ -1,15 +1,20 @@
 # audio-meta
-음악 데이터의 메타 정보를 추출하기 위한 AI 모델을 생성하고, 학습된 모델과 메타 데이터를 압축하여 [TorchServe](https://github.com/pytorch/serve)를 이용하기 위해 저장한다
+오디오 데이터의 메타 정보를 추출하기 위한 AI 모델을 생성하고, [TorchServe](https://github.com/pytorch/serve)를 이용하여 API 서빙 서버를 구축한다
 
+1. 모델 학습을 위한 GPU 환경설정
+2. 모델 학습과 테스트로 성능 비교
+3. 학습된 모델을 선택하여 config 파일등과 함께 압축하여 .MAR 파일로 저장
+4. API 서빙을 위한 서버 환경 설정
+5. 서버 구동
 
-## Environment Setup
+## 1. Model Environment Setup
 python3 (python version: 3.8)을 사용했으며 필요한 requiremets는 다음 명령으로 설치할 수 있다
 
 ```
 pip install -r requirements.txt
 ```
 
-## Create a Model
+## 2. Create a Model
 모델 생성 과정은 **main.py**에서 컨트롤되며 기본적인 실행 명령은 다음과 같다
 
 ```
@@ -44,9 +49,9 @@ database = 'db', pre_processing = 'pp', transform = 'tr', extractor = 'ex'의 �
 > e.g. -p audio_meta
 
 
-## Create .MAR file
+## 3. Create .MAR file
 
-학습된 AI 모델을 [TorchServe](https://github.com/pytorch/serve)로 서빙하기 위해 모델과 관련된 메타 데이터를 압축하여 .MAR 파일을 생성한다
+학습된 AI 모델을 [Torchserve](https://github.com/pytorch/serve)로 서빙하기 위해 모델과 관련된 메타 데이터를 압축하여 .MAR 파일을 생성한다
 
 > ./make_mar.sh
 
@@ -75,3 +80,33 @@ from ts.torch_handler.base_handler import BaseHandler
     class ModelHandler(BaseHandler):
     ...
 ```
+
+## 4. Server Environment Setup 
+모델 학습 환경과 동일한 python3을 사용하며 java 11 이상 버전이 필요하다
+
+> ./server_setup.sh
+
+![image](https://github.com/kimho1wq/TIL/assets/15611500/08ef9188-3d11-4a8b-b790-5c555ac9205f)
+
+
+
+## 5. Start API Server
+서버 설정 정보를 담고 있는 config.properties와 압축한 .MAR 파일의 경로를 지정하여 서버를 구동시킨다
+
+> torchserve --start --ncs --ts-config config.properties --model-store model_store --models audio_meta.mar
+
+```
+torchserve --help
+usage: torchserve [-h] [-v | --version]
+                          [--start]
+                          [--stop]
+                          [--ts-config TS_CONFIG]
+                          [--model-store MODEL_STORE]
+                          [--workflow-store WORKFLOW_STORE]
+                          [--models MODEL_PATH1 MODEL_NAME=MODEL_PATH2... [MODEL_PATH1 MODEL_NAME=MODEL_PATH2... ...]]
+                          [--log-config LOG_CONFIG]
+```
+
+
+
+
