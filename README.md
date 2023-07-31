@@ -1,5 +1,5 @@
 # audio-meta
-음성과 음악 데이터의 메타 정보를 추출하기 위한 AI 모델을 생성하고, 학습된 모델과 메타 데이터를 압축하여 [TorchServe](https://github.com/pytorch/serve)를 이용하기 위해 저장한다
+음악 데이터의 메타 정보를 추출하기 위한 AI 모델을 생성하고, 학습된 모델과 메타 데이터를 압축하여 [TorchServe](https://github.com/pytorch/serve)를 이용하기 위해 저장한다
 
 
 ## Environment Setup
